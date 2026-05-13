@@ -1,0 +1,567 @@
+<div class="top-header-area" id="sticker">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12 col-sm-12 text-center">
+        <div class="main-menu-wrap">
+          <div class="site-logo">
+            <a href="/trangchu">
+              <img src="/trangchu/assets/img/logo.png" alt="">
+            </a>
+          </div>
+          <nav class="main-menu">
+            <ul>
+              <li class="current-list-item"><a href="/trangchu">Trang chủ</a></li>
+              <li><a href="/san_pham">Sản phẩm</a></li>
+              <li class="menu-item-has-children">
+                <a href="#">Danh mục</a>
+                <ul class="sub-menu">
+                  <% var cats = (typeof categories !== 'undefined' && categories) ? categories : []; %>
+                  <% if (cats.length) { %>
+                    <% cats.forEach(function(c) { %>
+                      <li><a href="/san_pham?cat=<%= c._id %>"><%= c.danhmuc %></a></li>
+                    <% }) %>
+                  <% } %>
+                </ul>
+              </li>
+              <li>
+                <div class="header-icons">
+                  <div class="search-container">
+                    <a class="search-bar" href="#"><i class="fas fa-search"></i></a>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Tìm kiếm sản phẩm...">
+                    <a class="shopping-cart" href="/cart"><i class="fas fa-shopping-cart"></i></a>
+                    <a class="user-icon" href="#"><i class="fas fa-user"></i></a>
+                    <ul class ="sub-menu user-menu">
+                      <% if (typeof userId !== 'undefined' && userId) { %>
+                        <li><a id="nav-username" href="/user">Xin chào, <%= username %></a></li>
+                        <li><a href="/logout">Đăng xuất</a></li>
+                      <% } else { %>
+                        <li><a href="/login">Đăng nhập</a></li>
+                      <% } %>
+                    </ul>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </nav>
+          <div class="mobile-icons">
+            <a class="mobile-show search-bar-icon" href="#"><i class="fas fa-search"></i></a>
+            <a class="mobile-show cart search-bar-icon" href="/cart"><i class="fas fa-shopping-cart"></i></a>
+          </div>
+          <div class="mobile-menu"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="search-area">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <span class="close-btn"><i class="fas fa-window-close"></i></span>
+        <div class="search-bar">
+          <div class="search-bar-tablecell">
+            <h3>Search For:</h3>
+            <input type="text" id="searchAreaInput" placeholder="Keywords">
+            <button type="button" id="searchAreaBtn">Search <i class="fas fa-search"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="blur-bg-overlay"></div>
+<div class="form-popup" aria-hidden="true">
+  <span class="close-btn material-symbols-rounded" role="button" aria-label="Close">✕</span>
+  <div class="form-box login" role="dialog" aria-labelledby="loginTitle">
+    <div class="form-content">
+      <h2 id="loginTitle">Đăng Nhập</h2>
+      <form id="loginForm" action="#" method="post">
+        <div class="input-field">
+          <input type="text" name="username" required>
+          <label>Email hoặc số điện thoại</label>
+        </div>
+        <div class="input-field">
+          <input type="password" name="password" required>
+          <label>Mật khẩu</label>
+        </div>
+        <button type="submit">Đăng Nhập</button>
+      </form>
+      <div class="bottom-link">
+        Bạn chưa có tài khoản?
+        <a href="#" id="signup-link">Đăng ký</a>
+      </div>
+    </div>
+  </div>
+  <div class="form-box signup" role="dialog" aria-labelledby="signupTitle">
+    <div class="form-content">
+      <h2 id="signupTitle">Đăng Ký</h2>
+      <form action="/register" method="post">
+        <div class ="input-field">
+          <input type="text" name="name" required>
+          <label>Họ và tên</label>
+        </div>
+        <div class="input-field">
+          <input type="text" name="email" required>
+          <label>Email của bạn</label>
+        </div>
+        <div class="input-field">
+          <input type="text" name="phone" required>
+          <label>Số điện thoại</label>
+        </div>       
+        <div class="gender-field" style="margin: 15px 0; display: flex; align-items: center;">
+          <label style="color: #777; margin-right: 15px;">Giới tính:</label>
+          <div style="display: flex; gap: 20px;">
+            <label style="display: flex; align-items: center; cursor: pointer;">
+              <input type="radio" name="gender" value="male" required style="margin-right: 5px; width: auto; height: auto;">
+              Nam
+            </label>
+            <label style="display: flex; align-items: center; cursor: pointer;">
+              <input type="radio" name="gender" value="female" required style="margin-right: 5px; width: auto; height: auto;">
+              Nữ
+            </label>
+            <label style="display: flex; align-items: center; cursor: pointer;">
+              <input type="radio" name="gender" value="other" required style="margin-right: 5px; width: auto; height: auto;">
+              Khác
+            </label>
+          </div>
+        </div>
+        <div class="input-field">
+          <input type="password" name="password" required>
+          <label>Mật khẩu</label>
+        </div>
+        <div class="input-field">
+          <input type="password" name="confirm_password" required>
+          <label>Xác nhận mật khẩu</label>
+        </div>
+        <div class="policy-text">
+          <input type="checkbox" id="policy" name="policy" required>
+          <label for="policy">
+            Tôi đồng ý với
+            <a href="#" class="option">Điều khoản & Điều kiện</a>
+          </label>
+        </div>
+        <button type="submit">Đăng Ký</button>
+      </form>
+      <div class="bottom-link">
+        Bạn đã có tài khoản?
+        <a href="#" id="login-link">Đăng nhập</a>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+.user-menu li a {
+  white-space: nowrap;
+  display: inline-block;
+}
+.user-menu {
+  min-width: 150px;
+  padding: 10px;
+  text-align: center;
+}
+.user-menu li {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.user-menu li:hover {
+  background-color: #292929;
+}
+.mean-container #searchInput,
+.mobile-menu #searchInput {
+  display: none !important;
+}
+.menu-item-has-children {
+  position: relative;
+}
+.sub-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #fff;
+  min-width: 200px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.3s;
+  z-index: 99;
+}
+.menu-item-has-children:hover .sub-menu {
+  opacity: 1;
+  visibility: visible;
+}
+.sub-menu li {
+  display: block;
+  border-bottom: 1px solid #eee;
+}
+.sub-menu li a {
+  padding: 8px 15px;
+  display: block;
+  color: #555;
+  transition: 0.3s;
+}
+.sub-menu li a:hover {
+  background: #f5f5f5;
+  color: #F28123;
+}
+@media (max-width: 768px) {
+  .sub-menu {
+    position: static;
+    display: none;
+    box-shadow: none;
+    background: #f5f5f5;
+  }
+  .menu-item-has-children.active .sub-menu {
+    display: block;
+  }
+}
+.form-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 2000;
+  width: 100%;
+  opacity: 0;
+  pointer-events: none;
+  max-width: 440px;
+  background: #fff;
+  border: 2px solid #fff;
+  transform: translate(-50%, -70%);
+  transition: transform 0.3s ease, opacity 0.2s;
+  border-radius: 6px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+}
+.show-popup .form-popup {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%);
+}
+.blur-bg-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  height: 100%;
+  width: 100%;
+  opacity: 0;
+  pointer-events: none;
+  backdrop-filter: blur(4px);
+  transition: 0.2s ease;
+}
+.show-popup .blur-bg-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+.form-popup .form-box {
+  display: flex;
+  min-height: 260px;
+}
+.form-box .form-details {
+  width: 100%;
+  color: #fff;
+  max-width: 320px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+  background: linear-gradient(135deg,#00bcd4 0%,#0097a7 100%);
+  border-radius: 6px 0 0 6px;
+}
+.form-box .form-content {
+  width: 100%;
+  padding: 30px;
+  background: #fff;
+  color: #222;
+  border-radius: 0 6px 6px 0;
+}
+.form-box h2 {
+  text-align: center;
+  margin-bottom: 18px;
+}
+.input-field {
+  position: relative;
+  height: 50px;
+  width: 100%;
+  margin-top: 14px;
+}
+.input-field input {
+  height: 100%;
+  width: 100%;
+  background: none;
+  outline: none;
+  font-size: 0.95rem;
+  padding: 0 15px;
+  border: 1px solid #d0d0d0;
+  border-radius: 3px;
+}
+.input-field label {
+  position: absolute;
+  top: 50%;
+  left: 15px;
+  transform: translateY(-50%);
+  color: #777;
+  pointer-events: none;
+  transition: 0.2s ease;
+}
+.input-field input:is(:focus, :valid) {
+  padding: 16px 15px 0;
+}
+.input-field input:is(:focus, :valid) ~ label {
+  transform: translateY(-120%);
+  color: #00bcd4;
+  font-size: 0.75rem;
+}
+form button {
+  width: 100%;
+  color: #fff;
+  border: none;
+  padding: 12px 0;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 20px 0;
+  background: #00bcd4;
+}
+.form-content .bottom-link {
+  text-align: center;
+  font-size: 0.95rem;
+}
+.form-popup .signup,
+.form-popup.show-signup .login {
+  display: none;
+}
+.form-popup.show-signup .signup {
+  display: flex;
+}
+.form-popup .close-btn {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  color: #666;
+  cursor: pointer;
+  font-size: 18px;
+}
+@media (max-width: 760px) {
+  .form-popup {
+    width: 95%;
+  }
+  .form-box {
+    flex-direction: column;
+  }
+  .form-box .form-details {
+    display: none;
+  }
+  .form-box .form-content {
+    border-radius: 6px;
+  }
+}
+</style>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const searchIcons = document.querySelectorAll(".search-bar");
+  const searchInput = document.querySelector("#searchInput");
+  searchIcons.forEach(icon => {
+    icon.addEventListener("click", function(e) {
+      e.preventDefault();
+      searchInput.classList.toggle("active");
+      if (searchInput.classList.contains("active")) searchInput.focus();
+    });
+  });
+  const loginForm = document.getElementById('loginForm');
+  if (loginForm) {
+    loginForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      try {
+        const data = Object.fromEntries(new FormData(loginForm));
+        const res = await fetch('/api/trangchu', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        console.log('Đăng nhập response:', result);
+        if (result.success) {
+          window.location.href = '/trangchu';
+        } else {
+          alert(result.message || 'Đăng nhập thất bại');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Lỗi khi kết nối server');
+      }
+    });
+  }
+  const signupForm = document.querySelector('.form-box.signup form');
+  if (signupForm) {
+    signupForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        const formData = new FormData(signupForm);
+        const data = Object.fromEntries(formData);
+        if (data.password !== data.confirm_password) {
+          alert('Mật khẩu xác nhận không khớp!');
+          return;
+        }
+        const response = await fetch('/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+        const result = await response.json();
+        if (!response.ok) {
+          alert(result.message || 'Lỗi đăng ký');
+          return;
+        }
+        signupForm.reset();
+        alert('Đăng ký thành công! Vui lòng đăng nhập.');
+        const loginLink = document.getElementById('login-link');
+        if (loginLink) loginLink.click();
+      } catch (error) {
+        console.error('Lỗi:', error);
+        alert('Đăng ký thành công! Vui lòng đăng nhập.');
+      }
+    });
+  }
+  const loginIcon = document.querySelector(".shopping-cart[href='/login']");
+  const formPopup = document.querySelector(".form-popup");
+  const blur = document.querySelector(".blur-bg-overlay");
+  const hidePopupBtn = formPopup.querySelector(".close-btn");
+  const signupLoginLink = formPopup.querySelectorAll(".bottom-link a");
+
+  function openPopup() {
+    document.body.classList.add("show-popup");
+    formPopup.setAttribute("aria-hidden", "false");
+  }
+  function closePopup() {
+    document.body.classList.remove("show-popup");
+    formPopup.setAttribute("aria-hidden", "true");
+    formPopup.classList.remove("show-signup");
+  }
+  if (loginIcon) {
+    loginIcon.addEventListener("click", function(e) {
+      e.preventDefault();
+      openPopup();
+    });
+  }
+  if (blur) blur.addEventListener("click", closePopup);
+  if (hidePopupBtn) hidePopupBtn.addEventListener("click", closePopup);
+  signupLoginLink.forEach(link => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      formPopup.classList[link.id === 'signup-link' ? 'add' : 'remove']("show-signup");
+    });
+  });
+  document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape") closePopup();
+  });
+});
+document.addEventListener("DOMContentLoaded", function () {
+  const loginIcon = document.querySelector(".shopping-cart[href='/login']");
+  const formPopup = document.querySelector(".form-popup");
+  const blur = document.querySelector(".blur-bg-overlay");
+  const hidePopupBtn = formPopup.querySelector(".close-btn");
+  const signupLoginLink = formPopup.querySelectorAll(".bottom-link a");
+  const loginLink = document.getElementById("login-link");
+  const signupLink = document.getElementById("signup-link");
+
+  function openPopup() {
+    document.body.classList.add("show-popup");
+    formPopup.setAttribute("aria-hidden", "false");
+  }
+  function closePopup() {
+    document.body.classList.remove("show-popup");
+    formPopup.setAttribute("aria-hidden", "true");
+    formPopup.classList.remove("show-signup");
+  }
+  if (loginIcon) {
+    loginIcon.addEventListener("click", function(e) {
+      e.preventDefault();
+      openPopup();
+    });
+  }
+  if (blur) blur.addEventListener("click", closePopup);
+  if (hidePopupBtn) hidePopupBtn.addEventListener("click", closePopup);
+  signupLoginLink.forEach(link => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      formPopup.classList[link.id === 'signup-link' ? 'add' : 'remove']("show-signup");
+    });
+  });
+  document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape") closePopup();
+  });
+  const explicitLoginLinks = document.querySelectorAll('a[href="/login"]');
+  explicitLoginLinks.forEach(a => {
+    a.addEventListener("click", function(ev) {
+      if (a.classList.contains("shopping-cart")) return;
+      ev.preventDefault();
+      openPopup();
+    });
+  });
+});
+// handle search redirects
+document.addEventListener('DOMContentLoaded', function() {
+  const mainSearch = document.getElementById('searchInput');
+  const areaInput = document.getElementById('searchAreaInput');
+  const areaBtn = document.getElementById('searchAreaBtn');
+
+  function goSearch(q) {
+    if (!q || !q.trim()) return;
+    const url = '/timkiem?q=' + encodeURIComponent(q.trim());
+    window.location.href = url;
+  }
+
+  if (mainSearch) {
+    mainSearch.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') goSearch(mainSearch.value);
+    });
+  }
+  if (areaInput && areaBtn) {
+    areaBtn.addEventListener('click', function() { goSearch(areaInput.value); });
+    areaInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') goSearch(areaInput.value); });
+  }
+});
+async function addToCart(productId, quantity = 1) {
+  if (!productId) {
+    showAlert('Thiếu productId', 'error', 3000);
+    return;
+  }
+  try {
+    const res = await fetch('/cart/add', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ productId, quantity })
+    });
+    if (res.ok) {
+      const item = await res.json();
+      showAlert('Đã thêm vào giỏ hàng', 'success', 3000);
+      const badge = document.getElementById('cart-count');
+      if (badge) {
+        const cur = parseInt(badge.textContent || '0', 10) || 0;
+        badge.textContent = cur + Number(item.soluong || quantity);
+      }
+      return item;
+    } else {
+      const txt = await res.text();
+      showAlert(txt || 'Thêm giỏ hàng thất bại', 'error', 3000);
+    }
+  } catch (err) {
+    console.error(err);
+    showAlert('Lỗi kết nối', 'error', 3000);
+  }
+}
+
+document.addEventListener('click', function (e) {
+  const btn = e.target.closest('[data-add-to-cart]');
+  if (!btn) return;
+  e.preventDefault();
+  const pid = btn.dataset.productId || btn.datasetId || btn.getAttribute('data-product-id');
+  const qty = parseInt(btn.dataset.quantity || btn.getAttribute('data-quantity') || '1', 10);
+  addToCart(pid, qty);
+});
+window.addToCart = addToCart;
+</script>

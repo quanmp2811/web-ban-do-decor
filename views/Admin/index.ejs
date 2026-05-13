@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="vi" class=" layout-navbar-fixed layout-menu-fixed layout-compact " dir="ltr"
+  data-skin="default" data-assets-path="./assets/" data-template="vertical-menu-template" data-bs-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+  <title>Thống kê - Trang quản trị</title>
+  <link rel="icon" type="image/x-icon" href="../assets/img/favicon/favicon.ico" />
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/vendor/fonts/iconify-icons.css" />
+  <link rel="stylesheet" href="../assets/vendor/css/core.css" />
+  <link rel="stylesheet" href="../assets/css/demo.css" />
+  <link rel="stylesheet" href="../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+  <link rel="stylesheet" href="../assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css" />
+  <link rel="stylesheet" href="../assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css" />
+  <link rel="stylesheet" href="../assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css" />
+  <script src="../assets/vendor/js/helpers.js"></script>
+  <script src="../assets/js/config.js"></script>
+  </head>
+
+  <body>
+  <form action="/admin/admin" method="POST">
+    <div class="layout-wrapper layout-content-navbar">
+      <div class="layout-container">
+        <%- include('menu') %>
+        <div class="layout-page">
+          <%- include('nav') %>
+
+          <div class="content-wrapper">
+            <div class="container-xxl flex-grow-1 container-p-y">
+              <div class="row">
+                <div class="col-12 mb-6">
+                  <div class="card">
+                    <div class="card-header">
+                      <h5 class="card-title mb-0">Doanh Thu Theo Tháng (VNĐ)</h5>
+                    </div>
+                    <div class="card-body">
+                      <div id="monthlyRevenueChart"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 mb-6">
+                  <div class="card">
+                    <div class="card-header">
+                      <h5 class="card-title mb-0">Thống Kê Sản Phẩm</h5>
+                    </div>
+                    <div class="card-body">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Sản Phẩm</th>
+                            <th>Tổng Số</th>
+                            <th>Đã Bán</th>
+                            <th>Còn Lại</th>
+                          </tr>
+                        </thead>
+                        <tbody id="product-stats"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="layout-overlay layout-menu-toggle"></div>
+    </div>
+
+    <script src="../assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="../assets/vendor/libs/popper/popper.js"></script>
+    <script src="../assets/vendor/js/bootstrap.js"></script>
+    <script src="../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="../assets/vendor/js/menu.js"></script>
+    <script src="../assets/vendor/libs/apex-charts/apexcharts.js"></script>
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/dashboards-analytics.js"></script>
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script>
+      async function loadStats() {
+        try {
+          const productStats = await fetch('/api/product-stats').then(res => res.json());
+          const currentYear = new Date().getFullYear();
+          const revenueData = await fetch(`/api/revenue/${currentYear}`).then(res => res.json());
+
+          const tbody = document.getElementById('product-stats');
+          tbody.innerHTML = '';
+          productStats.forEach(p => {
+            tbody.innerHTML += `
+              <tr>
+                <td>${p.name}</td>
+                <td>${p.total}</td>
+                <td>${p.sold}</td>
+                <td>${p.remaining}</td>
+              </tr>
+            `;
+          });
+
+          var options = {
+            chart: { type: 'bar', height: 350 },
+            series: [{ name: 'Doanh Thu', data: revenueData }],
+            xaxis: { categories: ['Th1','Th2','Th3','Th4','Th5','Th6','Th7','Th8','Th9','Th10','Th11','Th12'] },
+            dataLabels: { enabled: true },
+            colors: ['#7367F0']
+          };
+          var chart = new ApexCharts(document.querySelector("#monthlyRevenueChart"), options);
+          chart.render();
+        } catch (error) {
+          console.error(error);
+        }
+      }
+      document.addEventListener("DOMContentLoaded", loadStats);
+    </script>
+  </form>
+  </body>
+</html>

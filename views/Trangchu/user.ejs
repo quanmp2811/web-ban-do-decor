@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="Responsive Bootstrap4 Shop Template, Created by Imran Hossain from https://imransdesign.com/">
+	<title>Tôi - Quân Decor</title>
+	<link rel="shortcut icon" type="image/png" href="../trangchu/assets/img/favicon.png">
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="../trangchu/assets/css/all.min.css">
+	<link rel="stylesheet" href="../trangchu/assets/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="../trangchu/assets/css/owl.carousel.css">
+	<link rel="stylesheet" href="../trangchu/assets/css/magnific-popup.css">
+	<link rel="stylesheet" href="../trangchu/assets/css/animate.css">
+	<link rel="stylesheet" href="../trangchu/assets/css/meanmenu.min.css">
+	<link rel="stylesheet" href="../trangchu/assets/css/main.css">
+	<link rel="stylesheet" href="../trangchu/assets/css/responsive.css">
+</head>
+<body>
+    <div class="loader">
+        <div class="loader-inner">
+            <div class="circle"></div>
+        </div>
+    </div>
+    <%- include('nav') %>
+    <div class="bannerphu"></div>
+    <div class="user-section mt-150 mb-150">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2 class="mt-4">Thông tin người dùng</h2>
+                    <% if (user) { %>
+                        <p><strong>Họ và tên:</strong> <%= user.username || user.name || '' %></p>
+                        <p><strong>Email:</strong> <%= user.email || '' %></p>
+                        <p><strong>Số điện thoại:</strong> <%= user.phone || '' %></p>
+                        <p class="mt-2">
+                          <button id="open-edit-profile" class="btn btn-primary" type="button">Chỉnh sửa thông tin</button>
+                          <button id="open-change-password" class="btn btn-secondary" type="button">Đổi mật khẩu</button>
+                        </p>
+                    <% } else { %>
+                        <p>Không tìm thấy thông tin người dùng.</p>
+                    <% } %>
+                    <h3 class="mt-4">Đơn hàng đã mua</h3>
+                    <div class="orders-table-wrapper mt-2">
+                      <table class="orders-table">
+                        <thead>
+                          <tr>
+                            <th>Mã đơn</th>
+                            <th>Ngày</th>
+                            <th>Sản phẩm</th>
+                            <th>Số lượng</th>
+                            <th>Tổng</th>
+                            <th>Chi tiết</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <% if (!orders || orders.length === 0) { %>
+                            <tr><td colspan="6" style="padding:100px; text-align:center;">Chưa có đơn hàng</td></tr>
+                          <% } else { %>
+                            <% orders.forEach(function(o) { %>
+                              <tr>
+                                <td><%= o._id %></td>
+                                <td><%= new Date(o.date).toLocaleString('vi-VN') %></td>
+                                <td style="max-width:240px; white-space:normal;"><%= o.name %></td>
+                                <td><%= o.soluong %></td>
+                                <td><%= (o.salary * o.soluong || o.salary || 0).toLocaleString('vi-VN') %>₫</td>
+                                <td><button type="button" class="btn btn-link view-order-btn" data-order-id="<%= o._id %>">Xem chi tiết</button></td>
+                              </tr>
+                            <% }) %>
+                          <% } %>
+                        </tbody>
+                      </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <%- include('footer') %>
+	<script src="../trangchu/assets/js/jquery-1.11.3.min.js"></script>
+	<script src="../trangchu/assets/bootstrap/js/bootstrap.min.js"></script>
+	<script src="../trangchu/assets/js/jquery.countdown.js"></script>
+	<script src="../trangchu/assets/js/jquery.isotope-3.0.6.min.js"></script>
+	<script src="../trangchu/assets/js/waypoints.js"></script>
+	<script src="../trangchu/assets/js/owl.carousel.min.js"></script>
+	<script src="../trangchu/assets/js/jquery.magnific-popup.min.js"></script>
+	<script src="../trangchu/assets/js/jquery.meanmenu.min.js"></script>
+	<script src="../trangchu/assets/js/sticker.js"></script>
+	<script src="../trangchu/assets/js/main.js"></script>
+    <script>
+        $(document).ready(function() {
+            var $grid = $('.product-lists').isotope({
+                itemSelector: '.col-lg-4'
+            });
+            $('.product-filters ul').on('click', 'li', function() {
+                var filterValue = $(this).attr('data-filter');
+                $('.product-filters ul li').removeClass('active');
+                $(this).addClass('active');
+                $grid.isotope({ filter: filterValue });
+            });
+        });
+    </script>
+    <!-- Edit profile modal (styled like signup form) -->
+    <div id="editProfileModal" class="user-modal" style="display:none; position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); z-index:2200; background:#fff; padding:0; border-radius:8px; box-shadow:0 6px 30px rgba(0,0,0,0.2); width:420px;">
+      <div class="form-box signup" style="display:flex;">
+        <div class="form-content" style="width:100%; padding:20px;">
+          <h2 id="signupTitle">Cập nhật thông tin</h2>
+          <form id="editProfileForm">
+            <div class="input-field">
+              <input id="profile-name" name="name" type="text" required>
+              <label>Họ và tên</label>
+            </div>
+            <div class="input-field">
+              <input id="profile-email" name="email" type="email" required>
+              <label>Email của bạn</label>
+            </div>
+            <div class="input-field">
+              <input id="profile-phone" name="phone" type="text" required>
+              <label>Số điện thoại</label>
+            </div>
+            <div class="gender-field" style="margin: 10px 0; display:flex; align-items:center; gap:12px;">
+              <label style="color:#777; margin-right:8px;">Giới tính:</label>
+              <label style="display:flex; align-items:center; gap:6px;"><input type="radio" name="gender" value="male" id="gender-male"> Nam</label>
+              <label style="display:flex; align-items:center; gap:6px;"><input type="radio" name="gender" value="female" id="gender-female"> Nữ</label>
+              <label style="display:flex; align-items:center; gap:6px;"><input type="radio" name="gender" value="other" id="gender-other"> Khác</label>
+            </div>
+            <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:12px;">
+              <button type="button" id="cancel-edit" class="btn btn-light">Hủy</button>
+              <button type="submit" class="btn btn-primary">Lưu</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Change password modal -->
+    <div id="changePasswordModal" class="user-modal" style="display:none; position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); z-index:2200; background:#fff; padding:20px; border-radius:8px; box-shadow:0 6px 30px rgba(0,0,0,0.2); width:360px;">
+      <h4>Đổi mật khẩu</h4>
+      <form id="changePasswordForm">
+        <div class="input-field"><input id="currentPassword" name="currentPassword" type="password" placeholder="Mật khẩu hiện tại" required></div>
+        <div class="input-field"><input id="newPassword" name="newPassword" type="password" placeholder="Mật khẩu mới" required></div>
+        <div class="input-field"><input id="confirmNewPassword" name="confirmNewPassword" type="password" placeholder="Xác nhận mật khẩu mới" required></div>
+        <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:10px;">
+          <button type="button" id="cancel-change-password" class="btn btn-light">Hủy</button>
+          <button type="submit" class="btn btn-danger">Đổi mật khẩu</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Order details modal -->
+    <div id="orderDetailModal" class="user-modal" style="display:none; position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); z-index:2200; background:#fff; padding:18px; border-radius:8px; box-shadow:0 6px 30px rgba(0,0,0,0.2); width:520px; max-width:95%;">
+      <h4>Chi tiết đơn hàng</h4>
+      <div id="orderDetailContent" style="max-height:60vh; overflow:auto;">
+        <div style="margin-bottom:8px;"><strong>Mã đơn:</strong> <span id="od-id"></span></div>
+        <div style="margin-bottom:8px;"><strong>Ngày:</strong> <span id="od-date"></span></div>
+        <div style="margin-bottom:8px;"><strong>Khách hàng:</strong> <span id="od-customer"></span></div>
+        <div style="margin-bottom:8px;"><strong>Số điện thoại:</strong> <span id="od-phone"></span></div>
+        <div style="margin-bottom:8px;"><strong>Địa chỉ:</strong> <span id="od-address"></span></div>
+        <hr />
+        <div><strong>Sản phẩm</strong></div>
+        <div id="od-items" style="margin-top:8px;"></div>
+        <hr />
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div><strong>Tổng:</strong> <span id="od-total"></span></div>
+          <div><strong>Trạng thái:</strong> <span id="od-status"></span></div>
+        </div>
+      </div>
+      <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:12px;">
+        <button type="button" id="close-order-detail" class="btn btn-light">Đóng</button>
+      </div>
+    </div>
+
+    <div id="modalBackdrop" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:2100;"></div>
+
+    <script>
+      (function(){
+        // helpers
+        const byId = id=>document.getElementById(id);
+        const showModal = (modal)=>{ byId('modalBackdrop').style.display='block'; modal.style.display='block'; };
+        const hideModal = (modal)=>{ byId('modalBackdrop').style.display='none'; modal.style.display='none'; };
+
+        // open buttons
+        const openEditBtn = byId('open-edit-profile');
+        const openChangeBtn = byId('open-change-password');
+        const editModal = byId('editProfileModal');
+        const changeModal = byId('changePasswordModal');
+
+        // parse current user data once (server-rendered)
+        const currentUser = JSON.parse('<%- JSON.stringify(user || {}) %>');
+        if (openEditBtn) {
+          openEditBtn.addEventListener('click', function(){
+            // populate fields from server-side user object
+            byId('profile-name').value = currentUser.name || currentUser.username || '';
+            byId('profile-email').value = currentUser.email || '';
+            byId('profile-phone').value = currentUser.phone || '';
+            // set gender radios
+            const g = currentUser.gender || '';
+            if (g === 'male') byId('gender-male').checked = true;
+            else if (g === 'female') byId('gender-female').checked = true;
+            else if (g === 'other') byId('gender-other').checked = true;
+            showModal(editModal);
+          });
+        }
+        if (openChangeBtn) {
+          openChangeBtn.addEventListener('click', function(){
+            byId('currentPassword').value='';
+            byId('newPassword').value='';
+            byId('confirmNewPassword').value='';
+            showModal(changeModal);
+          });
+        }
+
+        // cancel buttons
+        const cancelEdit = byId('cancel-edit'); if (cancelEdit) cancelEdit.addEventListener('click', ()=>hideModal(editModal));
+        const cancelChange = byId('cancel-change-password'); if (cancelChange) cancelChange.addEventListener('click', ()=>hideModal(changeModal));
+        byId('modalBackdrop').addEventListener('click', ()=>{ hideModal(editModal); hideModal(changeModal); });
+
+        // submit edit profile
+        const editForm = byId('editProfileForm');
+        if (editForm) {
+          editForm.addEventListener('submit', async function(e){
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(editForm));
+            try {
+              const res = await fetch('/user/update', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+              const j = await res.json();
+              if (!res.ok) throw new Error(j.message || 'Lỗi');
+              // update displayed info and nav username
+              if (j.user) {
+                // replace page fields
+                const nameEl = document.querySelector('p strong');
+                // simpler: reload the small parts by updating text nodes
+                document.querySelectorAll('.user-section p').forEach(p=>{});
+                // update nav username if present
+                const navName = document.getElementById('nav-username'); if (navName && j.username) navName.textContent = 'Xin chào, ' + j.username;
+              }
+              hideModal(editModal);
+              alert('Cập nhật thông tin thành công');
+              // update the info on page by reloading the section (simple approach: reload page fragment)
+              location.reload();
+            } catch (err) {
+              console.error(err); alert(err.message || 'Lỗi khi cập nhật');
+            }
+          });
+        }
+
+  // submit change password
+        const changeForm = byId('changePasswordForm');
+        if (changeForm) {
+          changeForm.addEventListener('submit', async function(e){
+            e.preventDefault();
+            const cur = byId('currentPassword').value || '';
+            const np = byId('newPassword').value || '';
+            const conf = byId('confirmNewPassword').value || '';
+            if (np !== conf) { alert('Mật khẩu mới không khớp'); return; }
+            try {
+              const res = await fetch('/user/change-password', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ currentPassword: cur, newPassword: np }) });
+              const j = await res.json();
+              if (!res.ok) throw new Error(j.message || 'Lỗi');
+              hideModal(changeModal);
+              alert('Đổi mật khẩu thành công. Bạn sẽ được chuyển tới trang chủ.');
+              window.location.href = '/trangchu';
+            } catch (err) {
+              console.error(err); alert(err.message || 'Lỗi khi đổi mật khẩu');
+            }
+          });
+        }
+
+        // Orders data and modal handling
+        const ordersData = JSON.parse('<%- JSON.stringify(orders || []) %>');
+        const orderModal = byId('orderDetailModal');
+        const orderBackdrop = byId('modalBackdrop');
+        const fillOrderModal = (o) => {
+          byId('od-id').textContent = o.orderId || o._id || '';
+          byId('od-date').textContent = o.date ? new Date(o.date).toLocaleString('vi-VN') : '';
+          byId('od-customer').textContent = o.customer_name || o.name || '';
+          byId('od-phone').textContent = o.phone || '';
+          const addressParts = [o.address, o.city, o.postal].filter(Boolean).join(', ');
+          byId('od-address').textContent = addressParts || '';
+          const itemsEl = byId('od-items'); itemsEl.innerHTML = '';
+          // Some orders in this schema represent single-line items; show name/qty/price
+          const itemHtml = `
+            <div style="display:flex; gap:12px; align-items:center; margin-bottom:8px;">
+              <div style="flex:1; word-break:break-word;"><strong>${escapeHtml(o.name || '')}</strong></div>
+              <div>SL: ${o.soluong || 1}</div>
+              <div>${((o.salary || 0) * (o.soluong || 1)).toLocaleString('vi-VN')}₫</div>
+            </div>`;
+          itemsEl.insertAdjacentHTML('beforeend', itemHtml);
+          byId('od-total').textContent = (o.total || (o.salary*(o.soluong||1)) || 0).toLocaleString('vi-VN') + '₫';
+          byId('od-status').textContent = o.status || 'pending';
+        };
+
+        // escape helper for inserting plain text into template
+        function escapeHtml(s) { return String(s || '').replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c]; }); }
+
+        // attach click handlers to every view-order button
+        document.querySelectorAll('.view-order-btn').forEach(btn=>{
+          btn.addEventListener('click', function(){
+            const id = this.getAttribute('data-order-id');
+            const o = ordersData.find(x=>String(x._id)===String(id));
+            if (!o) { alert('Không tìm thấy đơn hàng'); return; }
+            fillOrderModal(o);
+            showModal(orderModal);
+          });
+        });
+
+        const closeOrderBtn = byId('close-order-detail'); if (closeOrderBtn) closeOrderBtn.addEventListener('click', ()=>hideModal(orderModal));
+      })();
+    </script>
+<style>
+.mt-4 {
+  font-size:24px;
+}
+.user-section.mt-150 {
+  margin-top: 40px !important;
+}
+.user-section.mb-150 {
+  margin-bottom: 40px !important;
+}
+
+@media (max-width: 768px) {
+  .user-section.mt-150 { margin-top: 20px !important; }
+  .bannerphu { height: 12px; margin-bottom: 6px; }
+}
+
+.orders-table-wrapper {
+  max-height: 420px;
+  overflow-y: auto;
+  border: 1px solid #e6e6e6;
+  border-radius: 6px;
+  background: #fff;
+}
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.orders-table thead th {
+  position: sticky;
+  top: 0;
+  background: #f8f9fa;
+  z-index: 2;
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+.orders-table td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  vertical-align: middle;
+}
+@media (max-width: 768px) {
+  .orders-table-wrapper { max-height: 300px; }
+  .orders-table thead th, .orders-table td { padding: 8px; font-size: 14px; }
+}
+</style>
+</body>
+</html>

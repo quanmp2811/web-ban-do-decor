@@ -1,0 +1,373 @@
+<!doctype html>
+<html
+  lang="vi"
+  class=" layout-navbar-fixed layout-menu-fixed layout-compact "
+  dir="ltr"
+  data-skin="default"
+  data-assets-path="./assets/"
+  data-template="vertical-menu-template"
+  data-bs-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Sản phẩm</title>
+    <link rel="icon" type="image/x-icon" href="../assets/img/favicon/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../assets/vendor/fonts/iconify-icons.css" />
+    <link rel="stylesheet" href="../assets/vendor/libs/pickr/pickr-themes.css" />
+    <link rel="stylesheet" href="../assets/vendor/css/core.css" />
+    <link rel="stylesheet" href="../assets/css/demo.css" />
+    <link rel="stylesheet" href="../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+    <link rel="stylesheet" href="../assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css" />
+    <link rel="stylesheet" href="../assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css" />
+    <link rel="stylesheet" href="../assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css" />
+    <link rel="stylesheet" href="../assets/vendor/libs/flatpickr/flatpickr.css" />
+    <link rel="stylesheet" href="../assets/vendor/libs/datatables-rowgroup-bs5/rowgroup.bootstrap5.css" />
+    <link rel="stylesheet" href="../assets/vendor/libs/@form-validation/form-validation.css" />
+    <script src="../assets/vendor/js/helpers.js"></script>
+    <script src="../assets/vendor/js/template-customizer.js"></script>
+    <script src="../assets/js/config.js"></script>
+    <style>
+      .dataTables_wrapper { position: relative; z-index: 1; }
+      div.dt-buttons { position: relative; z-index: 1; }
+      .layout-navbar, .layout-menu { position: relative; z-index: 2000; }
+      .card-datatable { z-index: 0; }
+      .container-xxl { position: relative; z-index: 0; }
+      .layout-navbar {
+        position: relative;
+        z-index: 1050;
+      }
+
+      .layout-overlay,
+      .content-wrapper,
+      .layout-page {
+        z-index: 1 !important;
+      }
+      #productTable { table-layout: fixed; width: 100%; }
+      #productTable th, 
+      #productTable td {
+        vertical-align: middle;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding: 14px 12px; 
+        line-height: 1.3;
+      }
+      #productTable tbody tr {
+        min-height: 64px;  
+      }
+      #productTable th:nth-child(1), #productTable td:nth-child(1) { width: 50px; min-width:50px; }   /* STT */
+      #productTable th:nth-child(2), #productTable td:nth-child(2) { width: 140px; min-width:120px; } /* Tên */
+      #productTable th:nth-child(3), #productTable td:nth-child(3) { width: 70px;  min-width:70px; }  /* Hình ảnh */
+      #productTable th:nth-child(4), #productTable td:nth-child(4) { width: 110px; min-width:100px; } /* Danh mục */
+      #productTable th:nth-child(5), #productTable td:nth-child(5) { width: 120px; min-width:100px; } /* Ngày */
+      #productTable th:nth-child(6), #productTable td:nth-child(6) { width: 150px; min-width:100px; } /* Mô tả */
+      #productTable th:nth-child(7), #productTable td:nth-child(7) { width: 110px; min-width:100px; } /* Giá */
+      #productTable th:nth-child(8), #productTable td:nth-child(8) { width: 90px;  min-width:70px; }  /* Số lượng */
+      #productTable th:nth-child(9), #productTable td:nth-child(9) { width: 120px; min-width:120px; } /* Hành động */
+      #productTable img { display:block; max-width:80px; max-height:80px; width:auto; height:auto; border-radius:4px; }
+      #productTable td { cursor: default; }
+      #productTable td:hover {
+        overflow: visible;
+        white-space: normal;
+        z-index: 9999;
+        background: rgba(255,255,255,0.95);
+      }
+      @media (max-width: 768px) {
+        #productTable th, #productTable td { padding: 10px 8px; }
+        #productTable tbody tr { min-height: 56px; }
+        #productTable img { max-width:60px; max-height:60px; }
+      }
+    </style>
+  </head>
+  <body>
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5DDHKGP" height="0" width="0" style="display: none; visibility: hidden"></iframe></noscript>
+    <div class="layout-wrapper layout-content-navbar">
+      <div class="layout-container">
+        <%- include('menu') %>
+        <div class="layout-page">
+          <%- include('nav') %>
+          <div class="content-wrapper">
+            <div class="container-xxl flex-grow-1 container-p-y">
+              <h4 class="fw-bold py-3 mb-4">Danh sách sản phẩm</h4>
+              <div class="d-flex justify-content-end mb-3">
+                <button class="btn btn-success" data-bs-toggle="offcanvas" data-bs-target="#add-new-record">
+                  <i class="bx bx-plus"></i> Thêm sản phẩm
+                </button>
+              </div>
+              <div class="card shadow-sm rounded-4">
+                <div class="card-datatable text-nowrap">
+                  <table class="table table-bordered table-responsive" id="productTable">
+                    <thead class="table-light">
+                      <tr>
+                        <th>STT</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Hình ảnh</th>
+                        <th>Danh mục</th>
+                        <th>Ngày tạo</th>
+                        <th>Mô tả</th>
+                        <th>Giá</th>
+                        <th>Số lượng</th>
+                        <th>Hành động</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% if (products && products.length) { %>
+                        <% products.forEach(function(p, i) { %>
+                          <tr data-id="<%= p._id %>">
+                            <td class="text-center"><%= i + 1 %></td>
+                            <td><%= p.name || '' %></td>
+                            <td>
+                              <% if (p.image) { %>
+                                <img src="<%= p.image %>" alt="Hình ảnh sản phẩm" style="width:50px;height:50px;object-fit:cover;border-radius:4px;" />
+                              <% } else { %>
+                                <span>Chưa có hình</span>
+                              <% } %>
+                            </td>
+                            <td><%= p.danhmuc ? p.danhmuc.danhmuc : 'Chưa có danh mục' %></td>
+                            <td><%= p.date ? new Date(p.date).toLocaleDateString('vi-VN') : '' %></td>
+                            <td><%= p.mota || '' %></td>
+                            <td><%= (p.salary != null) ? p.salary.toLocaleString('vi-VN') + ' ₫' : '' %></td>
+                            <td><%= p.soluong || '' %></td>
+                            <td class="text-center">
+                              <button class="btn btn-sm btn-primary" onclick="editRow('<%= p._id %>', this)">Sửa</button>
+                              <a class="btn btn-sm btn-danger" href="#" onclick="confirmDelete(event, '/admin/san_pham/delete/<%= p._id %>')">Xóa</a>
+                            </td>
+                          </tr>
+                        <% }) %>
+                      <% } else { %>
+                        <tr><td colspan="9" class="text-center">Chưa có sản phẩm</td></tr>
+                      <% } %>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="offcanvas offcanvas-end" id="add-new-record">
+                <div class="offcanvas-header border-bottom">
+                  <h5 class="offcanvas-title">Thêm sản phẩm mới</h5>
+                  <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+                </div>
+                <div class="offcanvas-body flex-grow-1">
+                  <form class="add-new-record pt-0 row g-2" id="form-add-new-record" method="POST" action="/admin/san_pham/add" enctype="multipart/form-data">
+                    <div class="col-sm-12 form-control-validation">
+                      <label class="form-label" for="name">Tên sản phẩm</label>
+                      <div class="input-group input-group-merge">
+                        <span class="input-group-text"><i class="bx bx-package"></i></span>
+                        <input type="text" id="name" name="name" class="form-control" placeholder="Tên sản phẩm" required />
+                      </div>
+                    </div>
+                    <div class="col-sm-12 form-control-validation">
+                      <label class="form-label" for="image">Hình ảnh</label>
+                      <div class="input-group input-group-merge">
+                        <span class="input-group-text"><i class="bx bx-image"></i></span>
+                        <input type="file" id="image" name="image" class="form-control" accept="image/*" />
+                      </div>
+                    </div>
+                    <div class="col-sm-12 form-control-validation">
+                      <label class="form-label" for="danhmuc">Danh mục</label>
+                      <div class="input-group input-group-merge">
+                        <span class="input-group-text"><i class="bx bx-category"></i></span>
+                        <select id="danhmuc" name="danhmuc" class="form-select" required>
+                          <option value="">Chọn danh mục</option>
+                          <% if (categories && categories.length) { %>
+                            <% categories.forEach(function(c) { %>
+                              <option value="<%= c._id %>"><%= c.danhmuc %></option>
+                            <% }) %>
+                          <% } %>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-sm-12 form-control-validation">
+                      <label class="form-label" for="salary">Giá (VNĐ)</label>
+                      <div class="input-group input-group-merge">
+                        <span class="input-group-text"><i class="bx bx-dollar"></i></span>
+                        <input type="number" id="salary" name="salary" class="form-control" placeholder="1000000" />
+                      </div>
+                    </div>
+                    <div class="col-sm-12 form-control-validation">
+                      <label class="form-label" for="mota">Mô tả</label>
+                      <div class="input-group input-group-merge">
+                        <span class="input-group-text"><i class="bx bx-package"></i></span>
+                        <input type="text" id="mota" name="mota" class="form-control" placeholder="Mô tả sản phẩm" required />
+                      </div>
+                    </div>
+                    <div class="col-sm-12 form-control-validation">
+                      <label class="form-label" for="soluong">Số lượng</label>
+                      <div class="input-group input-group-merge">
+                        <span class="input-group-text"><i class="bx bx-dollar"></i></span>
+                        <input type="number" id="soluong" name="soluong" class="form-control" placeholder="100" />
+                      </div>
+                    </div>
+                    <div class="col-sm-12 mt-3">
+                      <button type="submit" class="btn btn-primary me-sm-3 me-1">Lưu</button>
+                      <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="offcanvas">Hủy</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="layout-overlay layout-menu-toggle"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+    <script>
+$(document).ready(function () {
+  $('#productTable').DataTable({
+    language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/vi.json' },
+    dom: '<"top"f>rt<"bottom"Bip><"clear">',
+    buttons: ['copy', 'excel', 'pdf', 'print'],
+    pageLength: 10,
+    responsive: false,
+    autoWidth: false,
+  });
+});
+
+function confirmDelete(event, url) {
+  event.preventDefault();
+  Swal.fire({
+    title: 'Xác nhận xóa?',
+    text: "Bạn không thể hoàn tác sau khi xóa!",
+    icon: 'warning', 
+    showCancelButton: true,
+    confirmButtonText: 'Xóa',
+    cancelButtonText: 'Hủy',
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      window.location.href = url;
+    }
+  });
+}
+
+function editRow(id, btn) {
+  const row = btn.closest('tr');
+  const nameCell = row.children[1];  // Updated indexes
+  const danhmucCell = row.children[3];
+  const motaCell = row.children[5];
+  const salaryCell = row.children[6];
+  const soluongCell = row.children[7];
+  const actionsCell = row.children[8];
+
+  const oldName = nameCell.innerText.trim();
+  const oldMota = motaCell.innerText.trim();
+  const oldSalary = salaryCell.innerText.replace(/[^\d]/g, '');
+  const oldSoluong = soluongCell.innerText.trim();
+  const oldDanhmuc = danhmucCell.innerText.trim();
+
+  nameCell.innerHTML = `<input type="text" class="form-control form-control-sm" value="${oldName.replace(/"/g, '&quot;')}">`;
+  motaCell.innerHTML = `<input type="text" class="form-control form-control-sm" value="${oldMota.replace(/"/g, '&quot;')}">`;
+  salaryCell.innerHTML = `<input type="number" class="form-control form-control-sm" value="${oldSalary}">`;
+  soluongCell.innerHTML = `<input type="number" class="form-control form-control-sm" value="${oldSoluong}">`;
+
+  // Add category dropdown
+  danhmucCell.innerHTML = `
+    <select class="form-select form-select-sm">
+      <option value="">Chọn danh mục</option>
+      <% if (categories && categories.length) { %>
+        <% categories.forEach(function(c) { %>
+          <option value="<%= c._id %>" ${oldDanhmuc === '<%= c.danhmuc %>' ? 'selected' : ''}>
+            <%= c.danhmuc %>
+          </option>
+        <% }) %>
+      <% } %>
+    </select>
+  `;
+
+  actionsCell.innerHTML = `
+    <button class="btn btn-sm btn-success me-1" onclick="saveRow('${id}', this)">Lưu</button>
+    <button class="btn btn-sm btn-secondary" onclick="cancelEdit(this, '${oldName.replace(/'/g, "\\'")}', '${oldDanhmuc.replace(/'/g, "\\'")}', '${oldMota.replace(/'/g, "\\'")}', '${oldSalary}', '${oldSoluong}')">Hủy</button>
+  `;
+}
+
+function cancelEdit(btn, name, danhmuc, mota, salary, soluong) {
+  const row = btn.closest('tr');
+  const id = row.dataset.id;
+  
+  row.children[1].innerText = name;
+  row.children[3].innerText = danhmuc;
+  row.children[5].innerText = mota;
+  row.children[6].innerText = salary ? Number(salary).toLocaleString('vi-VN') + ' ₫' : '';
+  row.children[7].innerText = soluong;
+  
+  row.children[8].innerHTML = `
+    <button class="btn btn-sm btn-primary" onclick="editRow('${id}', this)">Sửa</button>
+    <a class="btn btn-sm btn-danger" href="#" onclick="confirmDelete(event, '/admin/san_pham/delete/${id}')">Xóa</a>
+  `;
+}
+
+async function saveRow(id, btn) {
+  try {
+    const row = btn.closest('tr');
+    const name = row.children[1].querySelector('input').value.trim();
+    const danhmuc = row.children[3].querySelector('select').value;
+    const mota = row.children[5].querySelector('input').value.trim();
+    const salary = row.children[6].querySelector('input').value;
+    const soluong = row.children[7].querySelector('input').value;
+
+    const res = await fetch(`/admin/san_pham/update/${id}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, danhmuc, mota, salary, soluong })
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      row.children[1].innerText = name;
+      row.children[3].innerText = data.danhmucName || 'Chưa có danh mục';
+      row.children[5].innerText = mota;
+      row.children[6].innerText = salary ? Number(salary).toLocaleString('vi-VN') + ' ₫' : '';
+      row.children[7].innerText = soluong;
+      
+      row.children[8].innerHTML = `
+        <button class="btn btn-sm btn-primary" onclick="editRow('${id}', this)">Sửa</button>
+        <a class="btn btn-sm btn-danger" href="#" onclick="confirmDelete(event, '/admin/san_pham/delete/${id}')">Xóa</a>
+      `;
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Thành công!',
+        text: 'Đã lưu thay đổi.',
+        timer: 1500,
+        showConfirmButton: false
+      });
+    } else {
+      throw new Error(data.message || 'Lỗi không xác định');
+    }
+  } catch (err) {
+    console.error(err);
+    Swal.fire({
+      icon: 'error',
+      title: 'Lỗi!', 
+      text: 'Không thể cập nhật sản phẩm.'
+    });
+  }
+}
+    </script>
+    <script src="../assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="../assets/vendor/libs/popper/popper.js"></script>
+    <script src="../assets/vendor/js/bootstrap.js"></script>
+    <script src="../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="../assets/vendor/js/menu.js"></script>
+    <script src="../assets/vendor/libs/apex-charts/apexcharts.js"></script>
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/dashboards-analytics.js"></script>
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+  </body>
+</html>

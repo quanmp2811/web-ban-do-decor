@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="Responsive Bootstrap4 Shop Template">
+	<title>Thanh toán - Quân Decor</title>
+	<link rel="shortcut icon" type="image/png" href="../trangchu/assets/img/favicon.png">
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="../trangchu/assets/css/all.min.css">
+	<link rel="stylesheet" href="../trangchu/assets/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="../trangchu/assets/css/owl.carousel.css">
+	<link rel="stylesheet" href="../trangchu/assets/css/magnific-popup.css">
+	<link rel="stylesheet" href="../trangchu/assets/css/animate.css">
+	<link rel="stylesheet" href="../trangchu/assets/css/meanmenu.min.css">
+	<link rel="stylesheet" href="../trangchu/assets/css/main.css">
+	<link rel="stylesheet" href="../trangchu/assets/css/responsive.css">
+</head>
+	<style>
+		body { background: #111; color: #ddd; font-size: 14px; }
+		.header { background: #D0011B; padding: 12px; color: #fff; font-size: 18px; font-weight: bold; }
+		.section-box { background: #1a1a1a; border: 1px solid #333; border-radius: 6px; padding: 18px; margin-bottom: 20px; }
+		.section-title { font-weight: bold; margin-bottom: 10px; color: #f2f2f2; }
+		.product-item { display: flex; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 15px; }
+		.product-item img { width: 80px; border-radius: 4px; margin-right: 15px; }
+		.price { color: #ffce3d; font-size: 15px; font-weight: bold; }
+		.total-box { background: #3f2c00; color: white; padding: 20px; border-radius: 6px; }
+		.btn-order { background: #D0011B; color: #fff; font-size: 16px; padding: 12px 18px; border-radius: 4px; border: none; font-weight: bold; width: 180px; }
+		.link-change { color: #4DA6FF; font-size: 13px; cursor: pointer; }
+		.form-label { color: #ddd; }
+	</style>
+</head>
+<body>
+<%- include('nav') %>
+<div class="bannerphu"></div>
+	<div class="container mt-4">
+		<form id="checkout-form" action="/thanhtoan/submit" method="POST">
+			<div class="section-box">
+				<div class="section-title"><i class="fa-solid fa-location-dot"></i> Thông tin người nhận</div>
+				<div class="form-group">
+					<label class="form-label">Họ và tên</label>
+					<input name="name" id="name" class="form-control" placeholder="Họ và tên" required>
+				</div>
+				<div class="form-group">
+					<label class="form-label">Số điện thoại</label>
+					<input name="phone" id="phone" class="form-control" placeholder="Số điện thoại" required>
+				</div>
+				<div class="form-group">
+					<label class="form-label">Địa chỉ nhận hàng</label>
+					<input name="address" id="address" class="form-control" placeholder="Số nhà, đường, phường/xã, quận/huyện" required>
+				</div>
+				<div class="form-group">
+					<label class="form-label">Tỉnh/Thành</label>
+					<input class="form-control" name="city" id="city" list="city-list" placeholder="Nhập để tìm thành phố..." required>
+					<datalist id="city-list"></datalist>
+				</div>
+			</div>
+			<div class="section-box">
+				<div class="section-title"><i class="fa-solid fa-box"></i> Sản phẩm</div>
+				<% if (typeof cart !== 'undefined' && cart && cart.length) { %>
+					<% cart.forEach(function(item){ %>
+						<div class="product-item">
+							<img src="<%= item.image || '/trangchu/assets/img/default-product.png' %>" alt="<%= item.name %>">
+							<div class="flex-grow-1">
+								<div><%= item.name %></div>
+								<small>Số lượng: <%= item.soluong %></small>
+								<input type="hidden" name="items[]" value="<%= item._id %>">
+								<input type="hidden" name="quantities[]" value="<%= item.soluong %>">
+							</div>
+							<div class="text-right">
+								<div class="price"><%= (item.salary || 0).toLocaleString('vi-VN') %> VND</div>
+							</div>
+						</div>
+					<% }) %>
+				<% } else if (typeof items !== 'undefined' && items && items.length) { %>
+					<% items.forEach(function(it){ %>
+						<div class="product-item">
+							<img src="<%= it.image || '/trangchu/assets/img/default-product.png' %>" alt="<%= it.name %>">
+							<div class="flex-grow-1">
+								<div><%= it.name %></div>
+								<small>Số lượng: <%= it.soluong || 1 %></small>
+								<input type="hidden" name="items[]" value="<%= it._id %>">
+								<input type="hidden" name="quantities[]" value="<%= it.soluong || 1 %>">
+							</div>
+							<div class="text-right">
+								<div class="price"><%= (it.salary || 0).toLocaleString('vi-VN') %> VND</div>
+							</div>
+						</div>
+					<% }) %>
+				<% } else { %>
+					<p>Không có sản phẩm nào để thanh toán.</p>
+				<% } %>
+			</div>
+			<div class="section-box">
+				<div class="section-title"><i class="fa-solid fa-credit-card"></i> Phương thức thanh toán</div>
+				<div class="form-group">
+					<select name="payment_method" id="payment_method" class="form-control" required>
+						<option value="cod">Thanh toán khi nhận hàng (COD)</option>
+						<option value="online">Thanh toán trực tuyến</option>
+					</select>
+				</div>
+			</div>
+			<div class="total-box mb-5">
+				<div class="d-flex justify-content-between"><span>Tổng tiền hàng</span><span id="subtotal"><%= (typeof subtotal !== 'undefined') ? subtotal.toLocaleString('vi-VN') + ' VND' : '0 VND' %></span></div>
+				<div class="d-flex justify-content-between"><span>Phí vận chuyển</span><span id="shipping"><%= (typeof shipping !== 'undefined') ? shipping.toLocaleString('vi-VN') + ' VND' : '0 VND' %></span></div>
+				<hr style="border-color:#665300">
+				<div class="d-flex justify-content-between font-weight-bold"><span>Tổng thanh toán</span><span id="grandtotal"><%= (typeof grandtotal !== 'undefined') ? grandtotal.toLocaleString('vi-VN') + ' VND' : '0 VND' %></span></div>
+				<div class="text-right mt-3">
+					<button type="submit" class="btn-order">Đặt hàng</button>
+				</div>
+			</div>
+
+		</form>
+	</div>
+	<script>
+		(function(){
+			let subtotal = 0;
+			document.querySelectorAll('.product-item').forEach(item => {
+				const priceEl = item.querySelector('.price');
+				let unit = 0;
+				if (priceEl) {
+					unit = parseFloat((priceEl.innerText||'0').replace(/[^0-9\.,]/g,'').replace(/\./g,'')) || 0;
+				}
+				let qty = 1;
+				const qInput = item.querySelector('input[name="quantities[]"]');
+				if (qInput) {
+					qty = parseInt(qInput.value, 10) || 1;
+				} else {
+					const small = item.querySelector('small');
+					if (small) {
+						const m = small.innerText.match(/(\d+)/);
+						if (m) qty = parseInt(m[1], 10) || 1;
+					}
+				}
+				subtotal += unit * qty;
+			});
+			const shipping = subtotal > 0 ? 30000 : 0;
+			const grand = subtotal + shipping;
+			document.getElementById('subtotal').innerText = subtotal.toLocaleString('vi-VN') + ' VND';
+			document.getElementById('shipping').innerText = shipping.toLocaleString('vi-VN') + ' VND';
+			document.getElementById('grandtotal').innerText = grand.toLocaleString('vi-VN') + ' VND';
+		})();
+	</script>
+<%- include('footer') %>
+<script src="../trangchu/assets/js/jquery-1.11.3.min.js"></script>
+<script src="../trangchu/assets/bootstrap/js/bootstrap.min.js"></script>
+<script src="../trangchu/assets/js/jquery.countdown.js"></script>
+<script src="../trangchu/assets/js/jquery.isotope-3.0.6.min.js"></script>
+<script src="../trangchu/assets/js/waypoints.js"></script>
+<script src="../trangchu/assets/js/owl.carousel.min.js"></script>
+<script src="../trangchu/assets/js/jquery.magnific-popup.min.js"></script>
+<script src="../trangchu/assets/js/jquery.meanmenu.min.js"></script>
+<script src="../trangchu/assets/js/sticker.js"></script>
+<script src="../trangchu/assets/js/main.js"></script>
+<script src="../trangchu/assets/js/city.js"></script>
+<script src="../trangchu/assets/js/city.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+	const dataList = document.getElementById("city-list");
+	if (!dataList) return;
+
+	if (Array.isArray(provincesVN)) {
+		provincesVN.forEach(city => {
+			const opt = document.createElement("option");
+			opt.value = city;
+			dataList.appendChild(opt);
+		});
+	}
+});
+</script>
+</body>
+</html>

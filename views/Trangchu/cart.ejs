@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="Responsive Bootstrap4 Shop Template">
+	<title>Giỏ hàng - Quân Decor</title>
+	<link rel="shortcut icon" type="image/png" href="../trangchu/assets/img/favicon.png">
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="../trangchu/assets/css/all.min.css">
+	<link rel="stylesheet" href="../trangchu/assets/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="../trangchu/assets/css/owl.carousel.css">
+	<link rel="stylesheet" href="../trangchu/assets/css/magnific-popup.css">
+	<link rel="stylesheet" href="../trangchu/assets/css/animate.css">
+	<link rel="stylesheet" href="../trangchu/assets/css/meanmenu.min.css">
+	<link rel="stylesheet" href="../trangchu/assets/css/main.css">
+	<link rel="stylesheet" href="../trangchu/assets/css/responsive.css">
+</head>
+<body>
+<%- include('nav') %>
+<div class="bannerphu"></div>
+<section class="cart_section layout_padding">
+<div class="container">
+	<div class="heading_container">
+		<hr>
+		<h2 class="a2">Giỏ hàng của bạn</h2>
+	</div>
+	<form id="cart-form" method="POST" action="/thanhtoan/buy">
+	<div class="cart-items-container">
+	<% if (cart && cart.length) { %>
+	<% cart.forEach(item => { %>
+		<div class="cart-item">
+			<input type="checkbox" class="select-item" value="<%= item._id %>" data-price-unit="<%= item.salary %>">
+			<% if (item.image) { %>
+			<img src="<%= item.image %>" alt="<%= item.name %>">
+			<% } %>
+			<div class="info">
+				<h5><%= item.name %></h5>
+				<p>Giá: <%= item.salary.toLocaleString('vi-VN') %> VND</p>
+				<p>Thể loại: <%= item.theloai %></p>
+				<p>Ngày nhập: <%= item.ngaynhap %></p>
+				<p>Mô tả: <%= item.mota %></p>
+				<div class="quantity-group mb-3">
+					<label>Số lượng:</label>
+					<input type="number" id="quantity-<%= item._id %>" value="<%= item.soluong %>"
+						min="1"
+						max="<%= (item.id_sp && item.id_sp.soluong) ? item.id_sp.soluong : item.soluong %>"
+						class="form-control d-inline-block"
+						style="width: 80px">
+					<div class="quantity-info">
+						<small><strong>Còn:</strong> <%= (item.id_sp && item.id_sp.soluong) ? item.id_sp.soluong : item.soluong %></small>
+					</div>
+				</div>
+			</div>
+			<button type="button" class="remove-item nut xoasan" data-id="<%= item._id %>">Xoá</button>
+		</div>
+	<% }) %>
+	<% } else { %>
+		<p style="color:white">Giỏ hàng trống</p>
+	<% } %>
+	</div>
+	<div class="row action-buttons">
+		<div class="col-6">
+			<button type="button" id="select-all" class="nut tatca">Chọn tất cả</button>
+			<button type="button" id="deselect-all" class="nut tatca" style="display:none;">Bỏ chọn</button>
+			<button type="button" id="remove-selected" class="nut xoatatca" style="display:none;">Xóa sản phẩm</button>
+		</div>
+		<div class="col-6 text-right">
+			<p class="tong-tien">Tổng tiền: <span id="total-price">0</span> VND</p>
+			<button type="submit" class="nut xanh">Mua</button>
+		</div>
+	</div>
+	</form>
+</div>
+</section>
+<%- include('footer') %>
+<script src="../trangchu/assets/js/jquery-1.11.3.min.js"></script>
+<script src="../trangchu/assets/bootstrap/js/bootstrap.min.js"></script>
+<script src="../trangchu/assets/js/jquery.countdown.js"></script>
+<script src="../trangchu/assets/js/jquery.isotope-3.0.6.min.js"></script>
+<script src="../trangchu/assets/js/waypoints.js"></script>
+<script src="../trangchu/assets/js/owl.carousel.min.js"></script>
+<script src="../trangchu/assets/js/jquery.magnific-popup.min.js"></script>
+<script src="../trangchu/assets/js/jquery.meanmenu.min.js"></script>
+<script src="../trangchu/assets/js/sticker.js"></script>
+<script src="../trangchu/assets/js/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+	const formatVND = n => (n || 0).toLocaleString('vi-VN');
+
+	function calculateTotal() {
+		let total = 0;
+		document.querySelectorAll('.select-item:checked').forEach(cb => {
+			const id = cb.value;
+			const unit = parseFloat(cb.getAttribute('data-price-unit')) || 0;
+			const qtyInput = document.getElementById('quantity-' + id);
+			const qty = qtyInput ? Math.max(1, parseInt(qtyInput.value) || 1) : 1;
+			total += unit * qty;
+		});
+		const el = document.getElementById('total-price');
+		if (el) el.innerText = formatVND(total);
+	}
+
+	function toggleRemoveButton() {
+		const removeBtn = document.getElementById('remove-selected');
+		if (removeBtn) removeBtn.disabled = document.querySelectorAll('.select-item:checked').length === 0;
+	}
+
+	function toggleSelectButtons() {
+		const selected = document.querySelectorAll('.select-item:checked').length;
+		const selAll = document.getElementById('select-all');
+		const desel = document.getElementById('deselect-all');
+		const removeSelected = document.getElementById('remove-selected');
+		if (selAll && desel && removeSelected) {
+			selAll.style.display = selected ? 'none' : 'inline-block';
+			desel.style.display = selected ? 'inline-block' : 'none';
+			removeSelected.style.display = selected ? 'inline-block' : 'none';
+		}
+	}
+
+	function toggleBuyButton() {
+		const buy = document.querySelector('button[type="submit"].nut.xanh');
+		if (buy) buy.disabled = document.querySelectorAll('.select-item:checked').length === 0;
+	}
+
+	function attachCheckboxes() {
+		document.querySelectorAll('.select-item').forEach(cb => {
+			cb.addEventListener('change', function() {
+				calculateTotal();
+				toggleRemoveButton();
+				toggleSelectButtons();
+				toggleBuyButton();
+			});
+		});
+	}
+	attachCheckboxes();
+
+	document.querySelectorAll('input[id^="quantity-"]').forEach(inp => {
+		inp.addEventListener('change', function() {
+			let q = parseInt(this.value) || 1;
+			if (q < 1) { q = 1; this.value = 1; }
+			const id = this.id.replace('quantity-', '');
+			calculateTotal();
+			fetch('/cart/update/' + id, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ id: id, soluong: q })
+			}).catch(() => {
+			});
+		});
+	});
+
+	const selectAllBtn = document.getElementById('select-all');
+	const deselectAllBtn = document.getElementById('deselect-all');
+	if (selectAllBtn) selectAllBtn.addEventListener('click', function() {
+	document.querySelectorAll('.select-item').forEach(cb => cb.checked = true);
+	calculateTotal(); toggleRemoveButton(); toggleSelectButtons(); toggleBuyButton();
+	});
+	if (deselectAllBtn) deselectAllBtn.addEventListener('click', function() {
+	document.querySelectorAll('.select-item').forEach(cb => cb.checked = false);
+	calculateTotal(); toggleRemoveButton(); toggleSelectButtons(); toggleBuyButton();
+	});
+
+	const removeSelected = document.getElementById('remove-selected');
+	if (removeSelected) removeSelected.addEventListener('click', function() {
+		if (!confirm('Bạn có chắc chắn muốn xóa các sản phẩm đã chọn?')) return;
+		const ids = Array.from(document.querySelectorAll('.select-item:checked')).map(cb => cb.value);
+		if (!ids.length) return;
+		fetch('/cart/remove', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ ids: ids })
+		}).then(res => {
+			if (res.ok) {
+				ids.forEach(id => {
+					const el = document.querySelector('.select-item[value="' + id + '"]');
+					if (el) el.closest('.cart-item').remove();
+				});
+				calculateTotal(); toggleRemoveButton(); toggleSelectButtons(); toggleBuyButton();
+			} else {
+				const form = document.createElement('form'); form.method = 'POST'; form.action = '/cart/remove';
+				ids.forEach(id => { const i = document.createElement('input'); i.type='hidden'; i.name='ids[]'; i.value = id; form.appendChild(i); });
+				document.body.appendChild(form); form.submit();
+			}
+		}).catch(() => {
+			const form = document.createElement('form'); form.method = 'POST'; form.action = '/cart/remove';
+			ids.forEach(id => { const i = document.createElement('input'); i.type='hidden'; i.name='ids[]'; i.value = id; form.appendChild(i); });
+			document.body.appendChild(form); form.submit();
+		});
+	});
+	document.querySelectorAll('.remove-item').forEach(btn => {
+		btn.addEventListener('click', function() {
+			const id = this.getAttribute('data-id') || this.closest('.cart-item')?.querySelector('.select-item')?.value;
+			if (!id) return;
+			if (!confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) return;
+			fetch('/cart/remove/' + id, { method: 'POST' }).then(res => {
+				if (res.ok) {
+					this.closest('.cart-item').remove();
+					calculateTotal(); toggleRemoveButton(); toggleSelectButtons(); toggleBuyButton();
+				} else {
+					const form = document.createElement('form'); form.method='POST'; form.action='/cart/remove';
+					const i = document.createElement('input'); i.type='hidden'; i.name='id'; i.value = id; form.appendChild(i); document.body.appendChild(form); form.submit();
+				}
+			}).catch(() => {
+				const form = document.createElement('form'); form.method='POST'; form.action='/cart/remove';
+				const i = document.createElement('input'); i.type='hidden'; i.name='id'; i.value = id; form.appendChild(i); document.body.appendChild(form); form.submit();
+			});
+		});
+	});
+	const cartForm = document.getElementById('cart-form');
+	if (cartForm) cartForm.addEventListener('submit', function(e) {
+		const selected = Array.from(document.querySelectorAll('.select-item:checked'));
+		if (!selected.length) { alert('Vui lòng chọn ít nhất một sản phẩm để mua.'); e.preventDefault(); return; }
+		// remove any previous hidden inputs we may have added
+		this.querySelectorAll('input[name="items[]"]').forEach(i => i.remove());
+		this.querySelectorAll('input[name="quantities[]"]').forEach(i => i.remove());
+		selected.forEach(cb => {
+			const input = document.createElement('input'); input.type='hidden'; input.name='items[]'; input.value = cb.value; this.appendChild(input);
+			const qEl = document.getElementById('quantity-' + cb.value);
+			const qInput = document.createElement('input'); qInput.type='hidden'; qInput.name='quantities[]'; qInput.value = qEl ? qEl.value : 1; this.appendChild(qInput);
+		});
+	});
+	calculateTotal(); toggleRemoveButton(); toggleSelectButtons(); toggleBuyButton();
+
+});
+</script>
+</body>
+</html>

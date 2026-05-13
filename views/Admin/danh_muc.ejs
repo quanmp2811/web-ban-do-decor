@@ -1,0 +1,273 @@
+<!doctype html>
+<html
+  lang="vi"
+  class=" layout-navbar-fixed layout-menu-fixed layout-compact "
+  dir="ltr"
+  data-skin="default"
+  data-assets-path="./assets/"
+  data-template="vertical-menu-template"
+  data-bs-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Danh mục</title>
+    <link rel="icon" type="image/x-icon" href="../assets/img/favicon/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../assets/vendor/fonts/iconify-icons.css" />
+    <link rel="stylesheet" href="../assets/vendor/libs/pickr/pickr-themes.css" />
+    <link rel="stylesheet" href="../assets/vendor/css/core.css" />
+    <link rel="stylesheet" href="../assets/css/demo.css" />
+    <link rel="stylesheet" href="../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+    <link rel="stylesheet" href="../assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css" />
+    <link rel="stylesheet" href="../assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css" />
+    <link rel="stylesheet" href="../assets/vendor/libs/datatables-buttons-bs5/buttons.bootstrap5.css" />
+    <link rel="stylesheet" href="../assets/vendor/libs/flatpickr/flatpickr.css" />
+    <link rel="stylesheet" href="../assets/vendor/libs/datatables-rowgroup-bs5/rowgroup.bootstrap5.css" />
+    <link rel="stylesheet" href="../assets/vendor/libs/@form-validation/form-validation.css" />
+    <script src="../assets/vendor/js/helpers.js"></script>
+    <script src="../assets/vendor/js/template-customizer.js"></script>
+    <script src="../assets/js/config.js"></script>
+    <style>
+      .dataTables_wrapper { position: relative; z-index: 1; }
+      div.dt-buttons { position: relative; z-index: 1; }
+      .layout-navbar, .layout-menu { position: relative; z-index: 2000; }
+      .card-datatable { z-index: 0; }
+      .container-xxl { position: relative; z-index: 0; }
+      .layout-navbar {
+        position: relative;
+        z-index: 1050;
+      }
+
+      .layout-overlay,
+      .content-wrapper,
+      .layout-page {
+        z-index: 1 !important;
+      }
+      #productTable { table-layout: fixed; width: 100%; }
+      #productTable th, 
+      #productTable td {
+        vertical-align: middle;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding: 14px 12px; 
+        line-height: 1.3;
+      }
+      #productTable tbody tr {
+        min-height: 64px;  
+      }
+      #productTable th:nth-child(1), #productTable td:nth-child(1) { width: 50px; min-width:50px; }   /* STT */
+      #productTable th:nth-child(2), #productTable td:nth-child(2) { width: 50px; min-width:50px; } /* ID */
+      #productTable th:nth-child(3), #productTable td:nth-child(3) { width: 180px; min-width:120px; } /* Tên */
+      #productTable th:nth-child(4), #productTable td:nth-child(4) { width: 70px; min-width:70px; } /* Hành động */
+      #productTable img { display:block; max-width:80px; max-height:80px; width:auto; height:auto; border-radius:4px; }
+      #productTable td { cursor: default; }
+      #productTable td:hover {
+        overflow: visible;
+        white-space: normal;
+        z-index: 9999;
+        background: rgba(255,255,255,0.95);
+      }
+      @media (max-width: 768px) {
+        #productTable th, #productTable td { padding: 10px 8px; }
+        #productTable tbody tr { min-height: 56px; }
+        #productTable img { max-width:60px; max-height:60px; }
+      }
+    </style>
+  </head>
+  <body>
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5DDHKGP" height="0" width="0" style="display: none; visibility: hidden"></iframe></noscript>
+    <div class="layout-wrapper layout-content-navbar">
+      <div class="layout-container">
+        <%- include('menu') %>
+        <div class="layout-page">
+          <%- include('nav') %>
+          <div class="content-wrapper">
+            <div class="container-xxl flex-grow-1 container-p-y">
+              <h4 class="fw-bold py-3 mb-4">Danh sách danh mục</h4>
+              <div class="d-flex justify-content-end mb-3">
+                <button class="btn btn-success" data-bs-toggle="offcanvas" data-bs-target="#add-new-record">
+                  <i class="bx bx-plus"></i> Thêm danh mục
+                </button>
+              </div>
+              <div class="card shadow-sm rounded-4">
+                <div class="card-datatable text-nowrap">
+                  <table class="table table-bordered table-responsive" id="productTable">
+                    <thead class="table-light">
+                      <tr>
+                        <th>STT</th>
+                        <th>ID</th>
+                        <th>Tên danh mục</th>
+                        <th>Hành động</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% if (category && category.length) { %>
+                        <% category.forEach(function(c, i) { %>
+                          <tr>
+                            <td class="text-center"><%= i + 1 %></td>
+                            <td><%= c._id %></td>
+                            <td><%= c.danhmuc || '' %></td>
+                            <td class="text-center">
+                              <button class="btn btn-sm btn-primary" onclick="editRow('<%= c._id %>', this)">Sửa</button>
+                              <a class="btn btn-sm btn-danger" href="#" onclick="confirmDelete(event, '/admin/danh_muc/delete/<%= c._id %>')">Xóa</a>
+                            </td>
+                          </tr>
+                        <% }) %>
+                      <% } else { %>
+                        <tr>
+                          <td colspan="4" class="text-center">Chưa có danh mục</td>
+                        </tr>
+                      <% } %>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="offcanvas offcanvas-end" id="add-new-record">
+                <div class="offcanvas-header border-bottom">
+                  <h5 class="offcanvas-title">Thêm danh mục</h5>
+                  <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+                </div>
+                <div class="offcanvas-body flex-grow-1">
+                  <form class="add-new-record pt-0 row g-2" method="POST" action="/admin/danh_muc/add">
+                    <div class="col-sm-12 form-control-validation">
+                      <label class="form-label" for="danhmuc">Tên danh mục</label>
+                      <div class="input-group input-group-merge">
+                        <span class="input-group-text"><i class="bx bx-package"></i></span>
+                        <input type="text" id="danhmuc" name="danhmuc" class="form-control" placeholder="Tên danh mục" required />
+                      </div>
+                    </div>
+                    <div class="col-sm-12 mt-3">
+                      <button type="submit" class="btn btn-primary me-sm-3 me-1">Lưu</button>
+                      <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="offcanvas">Hủy</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="layout-overlay layout-menu-toggle"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+    <script>
+$(document).ready(function () {
+  $('#productTable').DataTable({
+    language: { url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/vi.json' },
+    dom: '<"top"f>rt<"bottom"Bip><"clear">',
+    buttons: ['copy', 'excel', 'pdf', 'print'],
+    pageLength: 10,
+    responsive: false,
+    autoWidth: false,
+  });
+});
+
+function confirmDelete(event, url) {
+  event.preventDefault();
+  Swal.fire({
+    title: 'Xác nhận xóa?',
+    text: "Bạn không thể hoàn tác sau khi xóa!",
+    icon: 'warning', 
+    showCancelButton: true,
+    confirmButtonText: 'Xóa',
+    cancelButtonText: 'Hủy',
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      window.location.href = url;
+    }
+  });
+}
+
+function editRow(id, btn) {
+  const row = btn.closest('tr');
+  const nameCell = row.children[2];
+  const actionsCell = row.children[3];
+
+  const oldName = nameCell.innerText.trim();
+
+  nameCell.innerHTML = `<input type="text" class="form-control form-control-sm" value="${oldName.replace(/"/g, '&quot;')}">`;
+
+  actionsCell.innerHTML = `
+    <button class="btn btn-sm btn-success me-1" onclick="saveRow('${id}', this)">Lưu</button>
+    <button class="btn btn-sm btn-secondary" onclick="cancelEdit(this, '${oldName.replace(/'/g, "\\'")}')">Hủy</button>
+  `;
+}
+
+function cancelEdit(btn, name) {
+  const row = btn.closest('tr');
+  const id = row.children[1].innerText;
+  
+  row.children[2].innerText = name;
+  row.children[3].innerHTML = `
+    <button class="btn btn-sm btn-primary" onclick="editRow('${id}', this)">Sửa</button>
+    <a class="btn btn-sm btn-danger" href="#" onclick="confirmDelete(event, '/admin/danh_muc/delete/${id}')">Xóa</a>
+  `;
+}
+
+async function saveRow(id, btn) {
+  try {
+    const row = btn.closest('tr');
+    const danhmuc = row.children[2].querySelector('input').value.trim();
+
+    const res = await fetch(`/admin/danh_muc/update/${id}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ danhmuc })  // đổi name thành danhmuc để khớp với model
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      row.children[2].innerText = danhmuc;
+      row.children[3].innerHTML = `
+        <button class="btn btn-sm btn-primary" onclick="editRow('${id}', this)">Sửa</button>
+        <a class="btn btn-sm btn-danger" href="#" onclick="confirmDelete(event, '/admin/danh_muc/delete/${id}')">Xóa</a>
+      `;
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Thành công!',
+        text: 'Đã lưu thay đổi.',
+        timer: 1500,
+        showConfirmButton: false
+      });
+    } else {
+      throw new Error(data.message || 'Lỗi không xác định');
+    }
+  } catch (err) {
+    console.error(err);
+    Swal.fire({
+      icon: 'error',
+      title: 'Lỗi!',
+      text: 'Không thể cập nhật danh mục.',
+    });
+  }
+}
+    </script>
+    <script src="../assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="../assets/vendor/libs/popper/popper.js"></script>
+    <script src="../assets/vendor/js/bootstrap.js"></script>
+    <script src="../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="../assets/vendor/js/menu.js"></script>
+    <script src="../assets/vendor/libs/apex-charts/apexcharts.js"></script>
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/dashboards-analytics.js"></script>
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+  </body>
+</html>

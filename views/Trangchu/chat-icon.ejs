@@ -1,0 +1,280 @@
+<!-- ✅ CHATBOT — Quân Decor -->
+<style>
+  /* Chat Icon */
+  .chat-icon {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      background-color: #ffa500;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      z-index: 9999;
+      animation: shake 1.5s infinite;
+      transition: transform 0.3s ease;
+      overflow: hidden;
+  }
+
+  .chat-icon:hover { transform: scale(1.1); }
+  .chat-icon i { font-size: 30px; color: white; }
+
+  @keyframes shake {
+      0%,100% { transform: rotate(0deg); }
+      25% { transform: rotate(5deg); }
+      50% { transform: rotate(-5deg); }
+      75% { transform: rotate(5deg); }
+  }
+
+  /* Chat Container */
+  .chat-window {
+      position: fixed;
+      bottom: 95px;
+      right: 20px;
+      width: 380px;
+      height: 520px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 15px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+      display: none;
+      flex-direction: column;
+      z-index: 99999;
+      overflow: hidden;
+  }
+
+  .chat-window-header {
+      background-color: #ff8e2b;
+      color: white;
+      padding: 12px;
+      text-align: center;
+      font-size: 17px;
+      font-weight: bold;
+      position: relative;
+  }
+
+  .close-chat {
+      position: absolute;
+      right: 12px;
+      top: 6px;
+      cursor: pointer;
+      font-size: 20px;
+      font-weight: bold;
+  }
+
+  .chat-window-body {
+      flex: 1;
+      padding: 14px;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+  }
+
+  .chat-window-footer {
+      display: flex;
+      border-top: 1px solid #ddd;
+      padding: 6px;
+      background: #fafafa;
+  }
+
+  .chat-window-footer input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #bbb;
+      outline: none;
+      font-size: 14px;
+  }
+
+  .chat-window-footer button {
+      background-color: #ffa500;
+      color: #fff;
+      border: none;
+      padding: 0 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-left: 6px;
+      font-size: 14px;
+  }
+
+  .chat-message {
+      margin: 8px 0;
+      display: flex;
+      max-width: 100%;
+  }
+
+  .msg-user { justify-content: flex-end; }
+  .msg-bot { justify-content: flex-start; }
+
+  .msg-user div {
+      background: #e1f0ff;
+      border-radius: 10px 10px 0 10px;
+  }
+
+  .msg-bot div {
+      background: #ececec;
+      border-radius: 10px 10px 10px 0;
+  }
+
+  .chat-message div {
+      padding: 10px 14px;
+      font-size: 14px;
+      word-break: break-word;
+      max-width: 85%;
+  }
+
+  /* Product card */
+  .chat-product {
+      background: #fff;
+      border-radius: 12px;
+      padding: 12px;
+      margin: 12px 0;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+  }
+  .chat-product img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 6px;
+  }
+  .chat-product button {
+      background: #ff8e2b;
+      border: none;
+      color: #fff;
+      padding: 8px;
+      border-radius: 6px;
+      width: 100%;
+      cursor: pointer;
+  }
+</style>
+
+<div class="chat-icon" id="chatToggle">
+  <i id="chatIcon" class="fas fa-comments"></i>
+</div>
+
+<div class="chat-window" id="chatWindow">
+  <div class="chat-window-header">
+    💬 Tư vấn trực tuyến
+    <div class="close-chat" id="closeChat">✖</div>
+  </div>
+
+  <div class="chat-window-body" id="chatBody">
+    <div class="chat-message msg-bot">
+      <div>Xin chào 👋<br/>Bạn đang muốn tìm sản phẩm Decor nào ạ?</div>
+    </div>
+  </div>
+
+  <div class="chat-window-footer">
+    <input type="text" placeholder="Nhập tin nhắn..." id="chatInput">
+    <button id="sendBtn">Gửi</button>
+  </div>
+</div>
+
+<script>
+  const chatWindow = document.getElementById('chatWindow');
+  const chatIcon = document.getElementById('chatIcon');
+
+  function toggleChat(forceClose = false) {
+    if (forceClose || chatWindow.style.display === 'flex') {
+      chatWindow.style.display = 'none';
+      chatIcon.classList.remove('fa-times');
+      chatIcon.classList.add('fa-comments');
+    } else {
+      chatWindow.style.display = 'flex';
+      chatIcon.classList.remove('fa-comments');
+      chatIcon.classList.add('fa-times');
+    }
+  }
+
+  document.getElementById("chatToggle").onclick = () => toggleChat();
+  document.getElementById("closeChat").onclick = () => toggleChat(true);
+
+  function appendMessage(role, text) {
+    const body = document.getElementById('chatBody');
+    const msg = document.createElement('div');
+    msg.className = `chat-message msg-${role}`;
+    msg.innerHTML = `<div>${text}</div>`;
+    body.appendChild(msg);
+    body.scrollTop = body.scrollHeight;
+  }
+
+  function appendProducts(products) {
+    const body = document.getElementById('chatBody');
+    products.forEach(p => {
+      const card = document.createElement('div');
+      card.className = "chat-product";
+      card.innerHTML = `
+        <img src="${p.image}" alt="${p.name}">
+        <div><strong>${p.name}</strong></div>
+        <div style="color:#d20000;font-weight:bold">${p.salary.toLocaleString('vi-VN')} VND</div>
+        <button onclick="addToCart('${p._id}')">🛒 Thêm vào giỏ</button>
+      `;
+      body.appendChild(card);
+    });
+    body.scrollTop = body.scrollHeight;
+  }
+
+  async function addToCart(id) {
+    try {
+      const res = await fetch('/cart/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId: id, quantity: 1 })
+      });
+      if (!res.ok) throw new Error('Thêm vào giỏ thất bại');
+      appendMessage('bot', '✅ Đã thêm sản phẩm vào giỏ hàng!');
+    } catch (e) {
+      console.error('addToCart error', e);
+      appendMessage('bot', 'Có lỗi khi thêm vào giỏ hàng.');
+    }
+  }
+
+  async function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const text = input.value.trim();
+    if (!text) return;
+
+    appendMessage('user', text);
+    input.value = '';
+    sendBtn.disabled = true;
+    const orig = sendBtn.textContent;
+    sendBtn.textContent = 'Đang gửi...';
+
+    try {
+      const res = await fetch('/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text })
+      });
+      if (!res.ok) {
+        appendMessage('bot', 'Máy chủ chưa trả lời — vui lòng thử lại sau.');
+        return;
+      }
+      const data = await res.json();
+      if (data.products && Array.isArray(data.products) && data.products.length) {
+        appendProducts(data.products);
+      } else if (data.reply) {
+        const filtered = data.reply.split('\n')
+          .filter(line => !(/^-.*\/san_pham\/.*VND/.test(line.trim())))
+          .join('\n');
+        appendMessage('bot', filtered);
+      }
+    } catch (e) {
+      console.error('Chat send error', e);
+      appendMessage('bot', 'Lỗi khi gửi tin nhắn.');
+    } finally {
+      sendBtn.disabled = false;
+      sendBtn.textContent = orig;
+    }
+  }
+
+  document.getElementById('sendBtn').onclick = sendMessage;
+  document.getElementById('chatInput').onkeydown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+</script>
