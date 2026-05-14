@@ -14,7 +14,7 @@ const cookieParser = require("cookie-parser");
 const app = express();
 
 try {
-  require('dotenv').config();
+  require('dotenv').config({ quiet: true });
 } catch (e) {
   console.warn('dotenv not available or failed to load, continuing without .env');
 }
