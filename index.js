@@ -66,6 +66,10 @@ app.use(async (req, res, next) => {
   }
 });
 
+app.get("/", (req, res) => {
+  res.redirect("/trangchu");
+});
+
 // Trang admin
 app.get("/admin", (req, res) => {
   res.render("admin/index");
