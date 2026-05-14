@@ -66,6 +66,16 @@ app.use(async (req, res, next) => {
   }
 });
 
+app.use(async (req, res, next) => {
+  try {
+    await connect();
+    next();
+  } catch (err) {
+    console.error("Database unavailable:", err);
+    res.status(503).send("Database connection failed");
+  }
+});
+
 app.get("/", (req, res) => {
   res.redirect("/trangchu");
 });
